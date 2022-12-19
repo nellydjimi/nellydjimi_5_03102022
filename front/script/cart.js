@@ -28,6 +28,9 @@ function displayCart() {
             
             //balise article
             var article = document.createElement("article");
+            article.setAttribute('data-id', canap.id);
+    article.setAttribute('data-color', canap.color);
+    section.appendChild(article);
             article.classList = 'cart__item';
     
             //balise Img
@@ -101,16 +104,13 @@ function displayCart() {
             //construire tous les noeuds HTML comme sur la page index
             //ATTENTION: le prix que tu veux affiché n'est pas le prix d'un canapé, mais d'un canapé multiplié par la quantité
     
-    
             //quantity
             var totalQuantity = document.querySelector('#totalQuantity');
             console.log(priceTotal)
             totalQuantity.innerText = numberOfCanap ;
             var totalPrice = document.querySelector('#totalPrice');
-            totalPrice.innerText = priceTotal;
-            
-        });
-        
+            totalPrice.innerText = priceTotal;  
+        });  
     } 
 }
 
@@ -129,123 +129,202 @@ function updateQuantity(canapToCheck) {
 }
 
 
+
+
+
+
+
+
+
+
 function deleteCanap() {
     let deleteItem = document.querySelectorAll('.deleteItem');
-    let monPanier = JSON.parse(localStorage.getItem('monPanier'));
-    
-    for (let k = 0; k < deleteItem.length; k++){
-        deleteItem[k].addEventListener("click" , (event) => {
+    console.log(deleteItem)
+    for (let j = 0; j < deleteItem.length; j++) {
+        deleteItem[j].addEventListener('click', (event) =>{
             event.preventDefault();
-
-            //Selection de l'element à supprimer en fonction de son id ET sa couleur
-            let idDelete = monPanier[i].id;
-            let colorDelete = monPanier[i].colors;
-
-            monPanier = monPanier.filter( let => let.id !== idDelete || let.colors !== colorDelete );
+            console.log(event)
+            let canapDeleteId = event.target.closest('article').getAttribute("data-id");
+            let canapDeleteColor = event.target.closest('article').getAttribute("data-color");
             
+            let monPanier = JSON.parse(localStorage.getItem('monPanier'));  
+            let canapToDel = monPanier.find((monPanier) => monPanier.id === canapDeleteId && monPanier.color === canapDeleteColor);
+            
+            let result = monPanier.filter((monPanier) => monPanier.id !== canapDeleteId || monPanier.color !== canapDeleteColor);
+            monPanier.canap = result;
+
+            newQuantity = monPanier.totalQuantity - canapToDel.quantity;
+            monPanier.totalQuantity = newQuantity;
+            priceToDel = canapToDel.quantity * canapToDel.price;
+            alert('Vous avez bien supprimé votre produit du panier !');
+
+            if (monPanier.lenght == 0) {
+                localStorage.clear();
+                window.location.reload()
+            } 
+            else {
+                localStorage.setItem("monPanier", JSON.stringify(monPanier));
+                window.location.reload()
+            }
+        })
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+     
+   /* let monPanier = JSON.parse(localStorage.getItem('monPanier'));
+    var divDelete = document.createElement("div");
+    divDelete.classList = 'cart__item__content__settings__delete';
+    var pDelete = document.createElement("p");
+    pDelete.classList ='deleteItem';
+    pDelete.innerText = "Supprimer";
+    let deleteItem = document.querySelector('.deleteItem');
+    
+    deleteItem?.forEach((deleteItem)=>{
+        deleteItem.addEventListener("click", (event)=>{
+            event.preventDefault();
+            const idDelete = event.target.getAttribute(canap.id);
+            const colorDelete = event.target.getAttribute(canap.colors);
+
+            monPanier = monPanier.filter( canap => canap.id !== idDelete || canap.colors !== colorDelete );
+            console.log(monPanier);
+
             localStorage.setItem("monPanier", JSON.stringify(monPanier));
-            
-            //Alerte produit supprimé et refresh
-            alert("Ce produit a bien été supprimé du panier");
             location.reload();
             
         })
-    }
-    }
-
+    })*/
+}
 
 
 function form(){
-   const orderForm = document.querySelector('.cart__order__form');
+   
+let monPanier = JSON.parse(localStorage.getItem('monPanier'));
+const btnOrder = document.getElementById('order');
 
+btnOrder.addEventListener("click", (event)=>{
+    event.preventDefault();
     
-    const btnOrder = document.querySelector('#order');
-    btnOrder.addEventListener('click', (event)=> {
-        event.preventDefault();
-        console.log('order');
-        //RegExp
+    const contact = {
+        firstName : document.getElementById('firstName').value,
+        lastName : document.getElementById('lastName').value,
+        address : document.getElementById('address').value,
+        city : document.getElementById('city').value,
+        email : document.getElementById('email').value,
+    }
+
         let firstNameRegExp= new RegExp(/^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/) ;
         let lastNameRegExp = new RegExp (/^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/);
         let addressRegExp = new RegExp (/^[a-zA-Z0-9\s\,\''\-]*$/);
-        let cityRegExp = new RegExp (/^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/);
+        let cityRegExp = new RegExp (/^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/);
         let emailRegExp = new RegExp (/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 
-//recupère id formulaire
-        const customer = {
-            firstName : document.getElementById('firstName').value,
-            lastName : document.getElementById('lastName').value,
-            address : document.getElementById('address').value,
-            city : document.getElementById('city').value,
-            email : document.getElementById('email').value,
-        }
-
-        console.log('customer :', customer)
-        const canapsId = [];
+        let formIsCorrect = true ;
         
-        JSON.parse(localStorage.getItem('monPanier')).forEach((canap) => {
-            canapsId.push(canap.id);
-        });
-
-        let formIsCorrect = true;
+        console.log('check firstname')
         //check firstName
-        if (firstNameRegExp.test(customer.firstName) === formIsCorrect) { 
-            return true;
-        } 
+        if (firstNameRegExp.test(contact.firstName)) { 
+            console.log('true')
+            formIsCorrect = true;
+        }
         else {
+            formIsCorrect = false;
+            console.log('false')
             let firstNameErrorMsg = document.querySelector('#firstNameErrorMsg');
             firstNameErrorMsg.innerText = "Prénom invalide";
         }
 
         //check lastName
-        if (lastNameRegExp.test(customer.lastName)=== formIsCorrect) { 
-            return true;
-        } else {
+        console.log('check lastname')
+        if (lastNameRegExp.test(contact.lastName)){ 
+            console.log('true')
+            formIsCorrect = true;
+        } 
+        else {
+            formIsCorrect = false;
+            console.log('false')
             let lastNameErrorMsg = document.querySelector('#lastNameErrorMsg');
             lastNameErrorMsg.innerText = "Nom invalide";
         }
 
         //check address
-        if (addressRegExp.test(customer.address)=== formIsCorrect ) { 
-            return true;
-        } else {
+        if (addressRegExp.test(contact.address)){ 
+            console.log('adress corrct')
+            formIsCorrect = true;
+        } 
+        else {
+            formIsCorrect = false;
+            console.log('address incorrect')
             let addressErrorMsg = document.querySelector('#addressErrorMsg');
             addressErrorMsg.innerText = "Adresse invalide";
         }
 
         //check city
-        if (cityRegExp.test(customer.city)=== formIsCorrect) { 
-            return true;
-        } else {
+        if (cityRegExp.test(contact.city)) { 
+            cityErrorMsg.innerText = "";
+            formIsCorrect = true;
+        } 
+        else {
+            formIsCorrect = false;
             let cityErrorMsg = document.querySelector('#cityErrorMsg');
             cityErrorMsg.innerText = "Ville invalide";
         }
 
         //check email
-        if (emailRegExp.test(customer.email)=== formIsCorrect) { 
-            return true ;
-        } else {
+        console.log('mail : ', contact.email)
+        if (emailRegExp.test(contact.email)) { 
+            console.log('mail correct');
+            formIsCorrect = true;
+        } 
+        else {
+            formIsCorrect = false;
+            console.log('mail incorrect');
             let emailErrorMsg = document.querySelector('#emailErrorMsg');
-            emailErrorMsg.innerText = "Email invalide"; 
+            emailErrorMsg.innerText = "Email invalide";
         }
+        console.log('formIsCorrect', formIsCorrect)
 
+        if (formIsCorrect) {
 
-        if (formIsCorrect === true) {
+            //construire l'objet products
+            let products = [];
+            monPanier.forEach((canap, index) => {
+                //faire le push autant de fois que le nombre quantity
+                products.push(canap.id);
+            });
             fetch("http://localhost:3000/api/products/order", { 
                 method: "POST", 
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({contact: customer, products: canapsId})
-            }).then( (response) =>{
+                body: JSON.stringify({contact: contact, products: products})
                 
-            
-            })
-            //rediriger vers la page cofirmation.html
-        }
-    })
-    
+            }).then(async (response) =>{
+                //rediriger vers la page cofirmation.html 
+                const POST_ORDER = await response.json();
+                let orderId = POST_ORDER.orderId;
+                console.log('reponse api : ', POST_ORDER)
+                
+                document.location.href = 'confirmation.html?orderId='+ orderId ;
+            }) 
+        }    
+    })  
 }
+
+
+    
+    
+
 
 
 
