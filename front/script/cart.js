@@ -29,8 +29,8 @@ function displayCart() {
             //balise article
             var article = document.createElement("article");
             article.setAttribute('data-id', canap.id);
-    article.setAttribute('data-color', canap.color);
-    section.appendChild(article);
+            article.setAttribute('data-color', canap.color);
+            section.appendChild(article);
             article.classList = 'cart__item';
     
             //balise Img
@@ -117,8 +117,9 @@ function displayCart() {
 
 function updateQuantity(canapToCheck) {
     let monPanier = JSON.parse(localStorage.getItem('monPanier'));
+    //etre sur que le inputquantity correspond a l'input du canapé c=qu'onvient de mettre à jour
     var inputQuantity = document.querySelector(".itemQuantity");
-    console.log(inputQuantity);
+    console.log('test test', inputQuantity);
     console.log('test', inputQuantity.value);
     let isCanapAlreadyInCart =  monPanier.find((canap) => canap.id === canapToCheck.id && canap.colors === canapToCheck.colors);
     if (isCanapAlreadyInCart !== undefined) {
@@ -129,16 +130,8 @@ function updateQuantity(canapToCheck) {
 }
 
 
-
-
-
-
-
-
-
-
 function deleteCanap() {
-    let deleteItem = document.querySelectorAll('.deleteItem');
+    let deleteItem = document.querySelectorAll('.cart__item .deleteItem');
     console.log(deleteItem)
     for (let j = 0; j < deleteItem.length; j++) {
         deleteItem[j].addEventListener('click', (event) =>{
@@ -152,7 +145,9 @@ function deleteCanap() {
             
             let result = monPanier.filter((monPanier) => monPanier.id !== canapDeleteId || monPanier.color !== canapDeleteColor);
             monPanier.canap = result;
-
+ 
+            console.log(canapDeleteId)
+            console.log(canapDeleteColor)
             newQuantity = monPanier.totalQuantity - canapToDel.quantity;
             monPanier.totalQuantity = newQuantity;
             priceToDel = canapToDel.quantity * canapToDel.price;
@@ -160,49 +155,12 @@ function deleteCanap() {
 
             if (monPanier.lenght == 0) {
                 localStorage.clear();
-                window.location.reload()
             } 
             else {
                 localStorage.setItem("monPanier", JSON.stringify(monPanier));
-                window.location.reload()
             }
         })
     };
-
-
-
-
-
-
-
-
-
-
-
-
-     
-   /* let monPanier = JSON.parse(localStorage.getItem('monPanier'));
-    var divDelete = document.createElement("div");
-    divDelete.classList = 'cart__item__content__settings__delete';
-    var pDelete = document.createElement("p");
-    pDelete.classList ='deleteItem';
-    pDelete.innerText = "Supprimer";
-    let deleteItem = document.querySelector('.deleteItem');
-    
-    deleteItem?.forEach((deleteItem)=>{
-        deleteItem.addEventListener("click", (event)=>{
-            event.preventDefault();
-            const idDelete = event.target.getAttribute(canap.id);
-            const colorDelete = event.target.getAttribute(canap.colors);
-
-            monPanier = monPanier.filter( canap => canap.id !== idDelete || canap.colors !== colorDelete );
-            console.log(monPanier);
-
-            localStorage.setItem("monPanier", JSON.stringify(monPanier));
-            location.reload();
-            
-        })
-    })*/
 }
 
 
@@ -224,16 +182,18 @@ btnOrder.addEventListener("click", (event)=>{
 
         let firstNameRegExp= new RegExp(/^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/) ;
         let lastNameRegExp = new RegExp (/^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/);
-        let addressRegExp = new RegExp (/^[a-zA-Z0-9\s\,\''\-]*$/);
+        let addressRegExp = new RegExp (/^[a-zA-Z0-9\s\,\''\-]/);
         let cityRegExp = new RegExp (/^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/);
         let emailRegExp = new RegExp (/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+//
+//
 
         let formIsCorrect = true ;
         
         console.log('check firstname')
         //check firstName
         if (firstNameRegExp.test(contact.firstName)) { 
-            console.log('true')
+            firstNameErrorMsg.innerText = "";
             formIsCorrect = true;
         }
         else {
@@ -246,7 +206,7 @@ btnOrder.addEventListener("click", (event)=>{
         //check lastName
         console.log('check lastname')
         if (lastNameRegExp.test(contact.lastName)){ 
-            console.log('true')
+            lastNameErrorMsg.innerText = "";
             formIsCorrect = true;
         } 
         else {
@@ -258,7 +218,7 @@ btnOrder.addEventListener("click", (event)=>{
 
         //check address
         if (addressRegExp.test(contact.address)){ 
-            console.log('adress corrct')
+            addressErrorMsg.innerText = "";
             formIsCorrect = true;
         } 
         else {
@@ -282,7 +242,7 @@ btnOrder.addEventListener("click", (event)=>{
         //check email
         console.log('mail : ', contact.email)
         if (emailRegExp.test(contact.email)) { 
-            console.log('mail correct');
+            emailErrorMsg.innerText = "";
             formIsCorrect = true;
         } 
         else {
