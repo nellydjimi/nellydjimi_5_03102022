@@ -64,7 +64,7 @@ function addToCart (id){
         colors : colors,
     }  
     //console.log(myCanap)
-    var monPanier = JSON.parse(localStorage.getItem("monPanier"))
+    var monPanier = JSON.parse(localStorage.getItem("monPanier"));
     //console.log(monPanier)
 
     //le panier est vide
