@@ -7,7 +7,9 @@ function main () {
 function buildProduct(){
     //extraire l'id contenu dans l'url
     var monPanier = JSON.parse(localStorage.getItem("monPanier"));
+    //creer puis retourner un nouvel URL
     const params = new URLSearchParams(window.location.search);
+    //creer un l'id du nouvel URL
     const id = params.get('id');
 
 
@@ -33,6 +35,8 @@ function buildProduct(){
 
         //balise colors
         var select = document.querySelector ('#colors');
+        
+        //boucle qui parcours les couleurs des canapés
         for (let i = 0; i < canap.colors.length ; i++) {
             var option = document.createElement ('option');
             option.innerText = canap.colors[i];
@@ -47,15 +51,18 @@ function buildProduct(){
         img.alt = canap.altTxt ;
         div.appendChild(img);
 
+        //ecris valeur dans le localStorage
         localStorage.setItem("monPanier", JSON.stringify(monPanier));
+
         //balise quantity
         //mettre en place une fonction pour ajouter le canapé au panier   
         var button = document.querySelector('#addToCart');
-        button.addEventListener('click', () => addToCart(id))
+        button.addEventListener('click', () => addToCart(id));
     })
 }
 
-function addToCart (id){    
+//Ajout au local storage avec article au panier
+function addToCart ( id){    
     const quantity = document.querySelector('#quantity').value;
     const  colors = document.querySelector('#colors').value;
     var myCanap = {
@@ -63,17 +70,25 @@ function addToCart (id){
         quantity : Number(quantity),
         colors : colors,
     }  
-    //console.log(myCanap)
+    //renvoie la valeur de la clé (moonPanier)
     var monPanier = JSON.parse(localStorage.getItem("monPanier"));
-    //console.log(monPanier)
+    console.log(colors)
+    console.log(quantity)
+
+    //si aucune couleur ou quantité n'a été selectionner
+    if (colors == null || colors === "" || quantity == null || quantity == 0){
+    alert ('Ajoutez une couleur ou une quantité au produit')
+    JSON.parse(localStorage.getItem("monPanier"))
+    return false
+}
 
     //le panier est vide
-    if(monPanier == null){
+    if ( monPanier == null){
         monPanier =[];
         monPanier.push(myCanap);
         localStorage.setItem("monPanier", JSON.stringify(monPanier));
-        console.log(monPanier);
-    }
+        return false;
+    } 
 
     //il y a un produit dans le panier
     else {       
@@ -83,9 +98,11 @@ function addToCart (id){
         } else {
             monPanier.push(myCanap);
         }        
-       localStorage.setItem("monPanier", JSON.stringify(monPanier)); 
+        localStorage.setItem("monPanier", JSON.stringify(monPanier));
     }
+
 }
+
 
 
 

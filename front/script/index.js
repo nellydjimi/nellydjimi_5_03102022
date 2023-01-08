@@ -1,5 +1,8 @@
+//appelle de l'API requete HTTP
 fetch("http://localhost:3000/api/products")
+//promesse 
 .then(async (response) => {
+    //ensemble des canapés sous format JSON
     var allCanap = await response.json();
     var section = document.querySelector('#items');
     console.log(allCanap);

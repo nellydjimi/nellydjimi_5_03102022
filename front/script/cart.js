@@ -13,6 +13,7 @@ function displayCart() {
     let priceTotal = 0;
 
     var section = document.querySelector('#cart__items');
+
     //ne pas multipliez les balises lorsqu'on augmente les quantité d'un article
     section.innerHTML = '';
 
@@ -31,7 +32,7 @@ function displayCart() {
             var sectionToBuild = document.querySelector('#cart__items');
             var article = document.createElement("article");
             article.setAttribute('data-id', canap.id);
-            article.setAttribute('data-color', canap.color);
+            article.setAttribute('data-color', canap.colors);
             section.appendChild(article);
             article.classList = 'cart__item';
     
@@ -80,15 +81,14 @@ function displayCart() {
             const deleteItem = document.querySelectorAll('.cart__item .deleteItem');
             
             pDelete.addEventListener("click", (event) => {
-            //deleteCanap(pDelete,divDelete, monPanier[i]));
             event.preventDefault();
              // enregistrer l'id et la couleur séléctionnés par le bouton supprimer
             let deleteId = monPanier[i].id;
-            let deleteColor = monPanier[i].color;
+            let deleteColor = monPanier[i].colors;
 
             // filtrer l'élément cliqué par le bouton supprimer
              // en respectant les conditions du callback
-            monPanier = monPanier.filter( elt => elt.id !== deleteId || elt.color !== deleteColor);
+            monPanier = monPanier.filter( elt => elt.id !== deleteId || elt.colors !== deleteColor);
       
             // envoyer les nouvelles données dans le localStorage
             localStorage.setItem('monPanier', JSON.stringify(monPanier));
@@ -139,7 +139,7 @@ function displayCart() {
 function updateQuantity(input, canapToCheck) {
     let monPanier = JSON.parse(localStorage.getItem('monPanier'));
     console.log(input.value)
-    //etre sur que le inputquantity correspond a l'input du canapé c=qu'onvient de mettre à jour
+    //etre sur que le inputquantity correspond a l'input du canapé qu'onvient de mettre à jour
     
     let isCanapAlreadyInCart =  monPanier.find((canap) => canap.id === canapToCheck.id && canap.colors === canapToCheck.colors);
     if (isCanapAlreadyInCart !== undefined) {
@@ -150,9 +150,7 @@ function updateQuantity(input, canapToCheck) {
     localStorage.setItem("monPanier", JSON.stringify(monPanier)); 
     displayCart();
 }
-
-       
-
+ 
 //formulaire et information de l'utilisateur
 function form(){
    
@@ -162,6 +160,7 @@ const btnOrder = document.getElementById('order');
 btnOrder.addEventListener("click", (event)=>{
     event.preventDefault();
     
+
     const contact = {
         firstName : document.getElementById('firstName').value,
         lastName : document.getElementById('lastName').value,
@@ -247,11 +246,13 @@ btnOrder.addEventListener("click", (event)=>{
 
             //construire l'objet products
             let products = [];
+            //recuperer l'id de chaque canap
             monPanier.forEach((canap, index) => {
-            //faire le push autant de fois que le nombre quantity
+            //faire le push autant de fois que le nombre quantity recuperer l'id de chaque canap
             products.push(canap.id);
             });
             fetch("http://localhost:3000/api/products/order", { 
+                //reception des données de l'API
                 method: "POST", 
                 headers: {
                     'Accept': 'application/json',
